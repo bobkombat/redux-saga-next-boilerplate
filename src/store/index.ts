@@ -1,15 +1,27 @@
-import { createStore, combineReducers, applyMiddleware } from 'redux';
+import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 
-import { countReducer } from './reducer';
+import { countReducer, userReducer } from './reducer';
+import rootSaga from './sagas';
 
 const rootReducer = combineReducers({
   count: countReducer,
+  user: userReducer,
 });
 
-const reduxSaga = createSagaMiddleware();
+const sagaMiddleware = createSagaMiddleware();
+const composeEnhancers =
+  typeof window === 'object' &&
+  (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
+    ? (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
+        // Specify extension’s options like name, actionsBlacklist, actionsCreators, serialize...
+      })
+    : compose;
 
-const store = createStore(rootReducer, applyMiddleware(reduxSaga));
+const enhancer = composeEnhancers(applyMiddleware(sagaMiddleware));
+const store = createStore(rootReducer, enhancer);
+
+sagaMiddleware.run(rootSaga);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

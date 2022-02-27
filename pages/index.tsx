@@ -2,10 +2,16 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 import styles from 'styles/Home.module.scss';
 import { useAppSelector, useAppDispatch } from 'hooks/redux';
+import { useEffect } from 'react';
 
 const Home: NextPage = () => {
   const count = useAppSelector((store) => store.count.value);
+  const name = useAppSelector((store) => store.user.name);
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch({ type: 'GET_USER' });
+  }, []);
 
   const handleIncrease = () => {
     dispatch({ type: 'INCREMENT', payload: { value: count + 1 } });
@@ -25,6 +31,7 @@ const Home: NextPage = () => {
         </h1>
 
         <p className={styles.description}>Count: {count}</p>
+        <p className={styles.description}>Name: {name}</p>
         <button onClick={handleIncrease}>Increment</button>
       </main>
     </div>
